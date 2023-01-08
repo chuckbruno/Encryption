@@ -25,7 +25,10 @@ MStatus Decryptor::doIt(const MArgList& args)
 
 	MStatus status;
 	MString filePath;
+	MString token;
 	CHECK_MSTATUS_AND_RETURN_IT(args.get(0, filePath));
+	CHECK_MSTATUS_AND_RETURN_IT(args.get(1, token));
+
 	std::fstream fin;
 	fin.open(filePath.asChar(), std::ios_base::in | std::ios_base::binary);
 	if (!fin.is_open()) 
@@ -45,7 +48,14 @@ MStatus Decryptor::doIt(const MArgList& args)
 	fin.close();
 
 	Bytef* mel = new Bytef[len_mel];
-	decrypt(buffer, len_data, len_mel, mel);
+	EncryptStatus re = decrypt(token.asChar(), buffer, len_data, len_mel, mel);
+	if (re != kSuccess)
+	{
+		MGlobal::displayError("Token was wrong");
+		delete[] mel;
+		delete[] buffer;
+		return MStatus::kFailure;
+	}
 
 	Bytef* mel_with_end = new Bytef[len_mel + 1];
 	memcpy(mel_with_end, mel, len_mel);

@@ -9,7 +9,7 @@ enum EncryptStatus
 	kFailure
 };
 
-extern EncryptStatus encrypt(const char* buffer, int size, uLongf* outLen, Bytef* (&data));
-extern EncryptStatus decrypt(const char* buffer, int size, uLongf outLen, Bytef* (&data));
+extern EncryptStatus encrypt(const char* token, const char* buffer, int size, uLongf* outLen, Bytef* (&data));
+extern EncryptStatus decrypt(const char* token, const char* buffer, int size, uLongf outLen, Bytef* (&data));
 
 #endif // !_ENCRYPTOR_ENGINE_

@@ -8,11 +8,22 @@
 #include "EncryptorEngine.h"
 #include "common.h"
 
+//args:
+//1: mel path
+//2: melx path
+//3: token
 
-int main()
+
+int main(int args, char* argv[])
 {
+	if (args != 4)
+	{
+		std::cerr << "Syntax error, check parameters";
+		return -1;
+	}
 	std::fstream finout;
-	const char* fileName = "E:/VisualStudioProj/Encryption/Encryption/createCube.mel";
+	const char* fileName = argv[1];
+	//const char* fileName = "E:/VisualStudioProj/Encryption/Encryption/createCube.mel";
 	finout.open(fileName, std::ios_base::in|std::ios_base::binary);
 	if (!finout.is_open())
 		std::cerr << "Could not open " << fileName << std::endl;
@@ -33,16 +44,18 @@ int main()
 
 	buffer[fileSize] = '\0';
 
-	Bytef* data = new Bytef[fileSize];
+	uLong bound = compressBound(fileSize);
+	Bytef* data = new Bytef[bound];
 	uLongf outLen;
-	encrypt(buffer, fileSize, &outLen, data);
+	encrypt(argv[3], buffer, fileSize, &outLen, data);
+	//encrypt("test", buffer, fileSize, &outLen, data);
 
 	std::cout << data << std::endl;
 
 	//decrypt(buffer, fileSize);
 	//std::cout << buffer << std::endl;
 
-	const char* outFileName = "E:/VisualStudioProj/Encryption/Encryption/createCube.melx";
+	const char* outFileName = argv[2];
 	finout.open(outFileName, std::ios_base::out | std::ios_base::binary);
 	if (!finout.is_open())
 		std::cerr << "Could not open " << outFileName << std::endl;
