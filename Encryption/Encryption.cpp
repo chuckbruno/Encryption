@@ -33,9 +33,11 @@ int main()
 
 	buffer[fileSize] = '\0';
 
-	encrypt(buffer, fileSize);
+	Bytef* data = new Bytef[fileSize];
+	uLongf outLen;
+	encrypt(buffer, fileSize, &outLen, data);
 
-	std::cout << buffer << std::endl;
+	std::cout << data << std::endl;
 
 	//decrypt(buffer, fileSize);
 	//std::cout << buffer << std::endl;
@@ -44,9 +46,11 @@ int main()
 	finout.open(outFileName, std::ios_base::out | std::ios_base::binary);
 	if (!finout.is_open())
 		std::cerr << "Could not open " << outFileName << std::endl;
-	finout.write(buffer, fileSize);
+	finout.write((const char*)(&fileSize), sizeof(fileSize));
+	finout.write((const char*)data, outLen);
 
 	delete[] buffer;
+	delete[] data;
 
 	return 0;
 }

@@ -3,8 +3,8 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project ("Encryption")
+project("Encryption")
 
 # Include sub-projects.
-add_subdirectory ("Encryption")
-add_subdirectory ("Decryption")
+add_subdirectory("Encryption")
+add_subdirectory("Decryption")

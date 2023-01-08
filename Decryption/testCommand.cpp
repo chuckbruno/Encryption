@@ -35,16 +35,27 @@ MStatus Decryptor::doIt(const MArgList& args)
 	
 	}
 
-	int fileSize = getFileSize(filePath.asChar());
-	char* buffer = new char[fileSize + 1];
-	fin.read(buffer, fileSize);
+	int len_mel;
+	fin.read((char*)(&len_mel), sizeof(len_mel));
+
+	int len_data = getFileSize(filePath.asChar());
+	len_data = len_data - sizeof(len_mel);
+	char* buffer = new char[len_data];
+	fin.read(buffer, len_data);
 	fin.close();
 
-	buffer[fileSize] = '\0';
-	decrypt(buffer, fileSize);
+	Bytef* mel = new Bytef[len_mel];
+	decrypt(buffer, len_data, len_mel, mel);
 
-	MGlobal::executeCommand(buffer);
+	Bytef* mel_with_end = new Bytef[len_mel + 1];
+	memcpy(mel_with_end, mel, len_mel);
+	mel_with_end[len_mel] = '\0';
+
+	MGlobal::executeCommand((char *)mel_with_end);
 	delete[] buffer;
+
+	delete[] mel;
+	delete[] mel_with_end;
 
 	return MS::kSuccess;
 

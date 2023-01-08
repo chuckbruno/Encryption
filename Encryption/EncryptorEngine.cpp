@@ -1,18 +1,25 @@
 #include "EncryptorEngine.h"
 
 
-void encrypt(char* buffer, int size)
+EncryptStatus encrypt(const char* buffer, int size, uLongf* outLen, Bytef* (&data))
 {
-	for (int i = 0; i < size; ++i)
-	{
-		buffer[i] = buffer[i] + 1;
-	}
+	uLongf destLen = compressBound(size);
+	Bytef* destData = new Bytef[destLen];
+	int status = compress(destData, &destLen, (Bytef*)buffer, size);
+	if (status != Z_OK)
+		return kFailure;
+
+	data = destData;
+	*outLen = destLen;
+
+	return kSuccess;
 }
 
-void decrypt(char* buffer, int size)
+EncryptStatus decrypt(const char* buffer, int size, uLongf outLen, Bytef* (&data))
 {
-	for (int i = 0; i < size; ++i)
-	{
-		buffer[i] = buffer[i] - 1;
-	}
+	data = new Bytef[outLen];
+	int status = uncompress(data, &outLen, (const Bytef*)buffer, size);
+	if (status != Z_OK)
+		return kFailure;
+	return kSuccess;
 }
